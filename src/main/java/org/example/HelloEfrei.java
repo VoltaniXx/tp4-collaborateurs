@@ -14,7 +14,6 @@ import java.util.Scanner;
 public class HelloEfrei {
 
     public static void main(String[] args) {
-
         // --- Initialisation de l'annuaire avec les données de démonstration ---
         Annuaire annuaire = new Annuaire();
         for (Collaborateur c : DonneesDemo.creerCollaborateurs()) {

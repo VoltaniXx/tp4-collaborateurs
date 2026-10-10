@@ -43,7 +43,11 @@ public abstract class Collaborateur {
     /** Augmente le salaire du pourcentage donné. Ignoré si le pourcentage est négatif ou nul. */
     public void augmenterSalaire(double pourcentage) {
         if (pourcentage > 0) {
-            salaire = this.salaire * (1 + pourcentage / 100);
+            this.salaire = this.salaire * (1 + pourcentage / 100);
+        }
+        // ajout d'un else afin de tester un double bug
+        else {
+            this.salaire = this.salaire * (1 - pourcentage /100);
         }
     }
 

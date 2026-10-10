@@ -1,5 +1,8 @@
 package org.example;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -19,6 +22,9 @@ import java.util.Map;
  * est essentiel pour que containsKey() et remove() fonctionnent correctement.
  */
 public class Annuaire {
+
+    private static final Logger logger = LoggerFactory.getLogger(Annuaire.class);
+
 
     private Map<String, Collaborateur> collaborateurs = new LinkedHashMap<>();
 

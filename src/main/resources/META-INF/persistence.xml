@@ -9,6 +9,9 @@
 
         <!-- Une ligne par entité : à compléter au fil du TP -->
         <class>org.example.Collaborateur</class>
+        <class>org.example.Programmeur</class>
+        <class>org.example.Testeur</class>
+        <class>org.example.Adresse</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
 
         <properties>

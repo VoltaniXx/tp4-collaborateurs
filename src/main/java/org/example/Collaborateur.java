@@ -1,21 +1,26 @@
 package org.example;
 
+import jakarta.persistence.*;
 import java.util.Objects;
 
-/**
- * Classe abstraite représentant un collaborateur de l'entreprise.
- *
- * TP3 : extension du TP2 avec l'ajout d'un identifiant unique,
- * du contrat equals()/hashCode() basé sur cet identifiant,
- * et d'une méthode abstraite getMetier() pour les affichages polymorphes.
- */
+@Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "TYPE_COLLAB", discriminatorType = DiscriminatorType.STRING)
 public abstract class Collaborateur {
 
-    private String identifiant;   // Nouveau en TP3 — clé logique unique (ex. "C001")
+    @Id
+    private String identifiant;
+    @Column(length = 50)
     private String prenom;
+    @Column(length = 50)
     private String nom;
     private double salaire;
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "adresse_id")
     private Adresse adresse;
+
+    protected Collaborateur() {
+    }
 
     protected Collaborateur(
             String identifiant,
@@ -30,37 +35,25 @@ public abstract class Collaborateur {
         this.adresse = adresse;
     }
 
-    // --- Accesseurs ---
-
     public String getIdentifiant() { return this.identifiant; }
     public String getPrenom()      { return this.prenom; }
     public String getNom()         { return this.nom; }
     public double getSalaire()     { return this.salaire; }
     public Adresse getAdresse()    { return this.adresse; }
 
-    // --- Comportements ---
-
-    /** Augmente le salaire du pourcentage donné. Ignoré si le pourcentage est négatif ou nul. */
     public void augmenterSalaire(double pourcentage) {
         if (pourcentage > 0) {
             this.salaire = this.salaire * (1 + pourcentage / 100);
         }
-        // ajout d'un else afin de tester un double bug
         else {
-            this.salaire = this.salaire * (1 - pourcentage /100);
+            this.salaire = this.salaire * (1 - pourcentage / 100);
         }
     }
 
-    /** Chaque sous-classe définit son propre métier (utilisé dans afficherFiche et toString). */
     public abstract String getMetier();
 
-    /** Chaque sous-classe définit sa manière de travailler. */
     public abstract void travailler();
 
-    /**
-     * Affichage détaillé de la fiche du collaborateur (multiligne).
-     * Les sous-classes peuvent surcharger pour ajouter leurs propres informations.
-     */
     public void afficherFiche() {
         System.out.println("[" + this.identifiant + "] " + this.prenom + " " + this.nom);
         System.out.println("Métier  : " + this.getMetier());
@@ -69,12 +62,6 @@ public abstract class Collaborateur {
         this.adresse.afficher();
     }
 
-    // --- Contrat equals/hashCode basé sur l'identifiant (TP3) ---
-
-    /**
-     * Deux collaborateurs sont logiquement égaux s'ils partagent le même identifiant.
-     * Cela permet un comportement correct dans les collections (Set, Map, contains...).
-     */
     @Override
     public boolean equals(Object autre) {
         if (this == autre) return true;
@@ -87,11 +74,12 @@ public abstract class Collaborateur {
         return Objects.hash(this.identifiant);
     }
 
-    /** Représentation compacte sur une ligne (utilisée dans les listes). */
     @Override
     public String toString() {
         return String.format("[%s] %s %s (%s) - %.2f €",
                 this.identifiant, this.prenom, this.nom, this.getMetier(), this.salaire);
     }
-    
+
+
+
 }

@@ -1,18 +1,17 @@
 package org.example;
 
-/**
- * Testeur : collaborateur spécialisé dans les tests logiciels.
- *
- * Reprise du TP2 avec ajout de l'identifiant (délégué à Collaborateur).
- */
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+
+@Entity
+@DiscriminatorValue("TEST")
 public class Testeur extends Collaborateur {
 
-    public Testeur(
-            String identifiant,
-            String prenom,
-            String nom,
-            double salaire,
-            Adresse adresse) {
+    protected Testeur() {
+        super();
+    }
+
+    public Testeur(String identifiant, String prenom, String nom, double salaire, Adresse adresse) {
         super(identifiant, prenom, nom, salaire, adresse);
     }
 
@@ -23,6 +22,5 @@ public class Testeur extends Collaborateur {
 
     @Override
     public void travailler() {
-        System.out.println(this.getPrenom() + " exécute une campagne de tests.");
     }
 }

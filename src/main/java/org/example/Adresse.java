@@ -1,10 +1,20 @@
 package org.example;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
 /**
  * Représente l'adresse postale d'un collaborateur.
  * Reprise de TP2 avec ajout de toString() pour les affichages en ligne (Annuaire).
  */
+@Entity
 public class Adresse {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     private String rue;
     private String codePostal;
@@ -16,6 +26,11 @@ public class Adresse {
         this.codePostal = codePostal;
         this.ville = ville;
         this.pays = pays;
+    }
+
+    protected Adresse()
+    {
+
     }
 
     public String getRue()        { return this.rue; }

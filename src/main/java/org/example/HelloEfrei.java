@@ -1,20 +1,46 @@
 package org.example;
 
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
 import java.util.List;
 import java.util.Scanner;
 
-/**
- * Point d'entrée de l'application — Annuaire des collaborateurs.
- *
- * Reprend la structure du HelloEfrei du TP1 :
- *   - méthode afficherMenu() statique
- *   - méthodes utilitaires statiques (afficherListe, saisirIdentifiant...)
- *   - boucle principale avec validation hasNextInt() + switch fléché
- */
 public class HelloEfrei {
 
     public static void main(String[] args) {
-        // --- Initialisation de l'annuaire avec les données de démonstration ---
+        EntityManagerFactory fabrique = Persistence.createEntityManagerFactory("collaborateurs-pu");
+
+        CollaborateurService service = new CollaborateurService(fabrique);
+
+        Adresse adresseAlice = new Adresse("12 rue des Lilas", "75000", "Paris", "France");
+        Programmeur alice = new Programmeur("C001", "Alice", "Martin", 42000.0, adresseAlice, "Java");
+
+        try {
+            service.persister(alice);
+            System.out.println("Alice enregistrée avec succès en base !");
+        } catch (Exception e) {
+            System.out.println("Alice existe déjà ou erreur : " + e.getMessage());
+        }
+
+        // on test find()
+        Collaborateur trouveAlice = service.trouver("C001");
+        if (trouveAlice != null) {
+            System.out.println("Trouvé avec find('C001') : " + trouveAlice);
+        }
+
+        // Test find(...) avec un identifiant inexistant ("C999")
+        Collaborateur inexistant = service.trouver("C999");
+        // find() retourne null
+        System.out.println("Recherche de 'C999' (inexistant) : " + inexistant);
+
+        service.augmenterSalaireCollaborateur("C001", 10.0);
+        System.out.println("Salaire d'Alice après augmentation : " + service.trouver("C001").getSalaire() + " €");
+
+        List<Collaborateur> riches = service.trouverSalaireSuperieur(40000.0);
+        System.out.println("Collaborateurs gagnant plus de 40 000 € (via JPQL) : " + riches.size());
+
+        fabrique.close();
+
         Annuaire annuaire = new Annuaire();
         for (Collaborateur c : DonneesDemo.creerCollaborateurs()) {
             annuaire.ajouter(c);
@@ -28,7 +54,7 @@ public class HelloEfrei {
 
             if (scanner.hasNextInt()) {
                 choix = scanner.nextInt();
-                scanner.nextLine(); // consommer le saut de ligne résiduel
+                scanner.nextLine();
 
                 switch (choix) {
                     case 0 -> System.out.println("À bientôt !");
@@ -107,8 +133,6 @@ public class HelloEfrei {
         scanner.close();
     }
 
-    // --- Méthodes statiques utilitaires ---
-
     private static void afficherMenu() {
         System.out.println();
         System.out.println("=== Annuaire des collaborateurs (" + "EFREI" + ") ===");
@@ -125,11 +149,6 @@ public class HelloEfrei {
         System.out.print("Votre choix : ");
     }
 
-    /**
-     * Affiche une liste de collaborateurs.
-     * Utilise List<? extends Collaborateur> pour accepter aussi bien
-     * List<Collaborateur> que List<Programmeur> (covariance via wildcard borné).
-     */
     private static void afficherListe(List<? extends Collaborateur> liste) {
         if (liste.isEmpty()) {
             System.out.println("Aucun collaborateur trouvé.");
